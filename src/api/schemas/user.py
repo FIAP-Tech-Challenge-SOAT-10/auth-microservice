@@ -9,6 +9,7 @@ class UserBase(BaseModel):
     username: str
     email: EmailStr
     full_name: str | None = None
+    cpf: str # Added cpf
 
 
 class UserCreate(UserBase):
@@ -29,3 +30,7 @@ class UserResponse(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class UserInDB(UserResponse):
+    password_hash: str

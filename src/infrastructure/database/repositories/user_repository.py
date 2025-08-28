@@ -1,11 +1,15 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy import delete
 from src.domain.interfaces.user_repository import UserRepository as UserRepo
 from src.infrastructure.database.models.user import User
-from src.infrastructure.database.session import AsyncSessionLocal
 
 
 class UserRepository(UserRepo):
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
-    def register_user(
+    async def register_user(
         self,
         username: str,
         full_name: str,
@@ -13,29 +17,36 @@ class UserRepository(UserRepo):
         email: str,
         password: str,
     ) -> User:
-        user = User(
+        new_user = User(
             username=username,
             full_name=full_name,
             cpf=cpf,
             email=email,
             password_hash=password,
         )
-        return user
-
-    def get_user(self, user_id: int) -> User:
-        return User(id=user_id)
-
-    def update_user(self, user: User) -> User:
-        user = User(id=user.id)
-        new_user = User(
-            id=user.id,
-            username=user.username or None,
-            full_name=user.full_name or None,
-            cpf=user.cpf or None,
-            email=user.email or None,
-            password_hash=user.password_hash or None,
-        )
+        self.session.add(new_user)
+        await self.session.commit()
+        await self.session.refresh(new_user)
         return new_user
 
-    def delete_user(self, user_id: int) -> None:
-        pass
+    async def get_user(self, user_id: int) -> User | None:
+        result = await self.session.execute(select(User).filter(User.id == user_id))
+        return result.scalar_one_or_none()
+
+    async def get_user_by_username(self, username: str) -> User | None:
+        result = await self.session.execute(select(User).filter(User.username == username))
+        return result.scalar_one_or_none()
+
+    async def get_user_by_email(self, email: str) -> User | None:
+        result = await self.session.execute(select(User).filter(User.email == email))
+        return result.scalar_one_or_none()
+
+    async def update_user(self, user: User) -> User:
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
+
+    async def delete_user(self, user_id: int) -> None:
+        await self.session.execute(delete(User).filter(User.id == user_id))
+        await self.session.commit()

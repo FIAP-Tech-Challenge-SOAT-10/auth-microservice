@@ -14,6 +14,7 @@ class User(Base):
     username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     full_name = Column(String(100), nullable=True)
+    cpf = Column(String(11), unique=True, index=True, nullable=True) # Added cpf
     password_hash = Column(String(255), nullable=False)
     role = Column(Enum(UserRole), default=UserRole.USER, nullable=False)
     created_at = Column(
