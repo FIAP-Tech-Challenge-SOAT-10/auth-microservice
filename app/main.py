@@ -6,7 +6,7 @@ from fastapi import FastAPI, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
-from config import settings
+from app.config import settings
 # from logging_config import LoggingMiddleware, configure_logging, get_logger
 # from metrics import setup_metrics
 # from routers import admin, auth, health

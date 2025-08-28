@@ -4,7 +4,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from main import app
+from app.main import app
 
 
 @pytest.fixture(scope="function")
@@ -14,6 +14,16 @@ def client():
     """
     with TestClient(app) as c:
         yield c
+
+
+
+# @pytest.fixture(scope="function")
+# def client():
+#     """
+#     Simple test client for initial healthcheck tests.
+#     """
+#     with TestClient(app) as c:
+#         yield c
 
 # import asyncio
 # from collections.abc import AsyncGenerator, Generator
@@ -25,73 +35,73 @@ def client():
 # from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 # from sqlalchemy.pool import StaticPool
 
-# # from database import Base, get_db
-# from main import app
-# # from models.refresh_token import RefreshToken  # type: ignore # noqa: F401
+# from app.database import Base, get_db
+# from app.main import app
+# from models.refresh_token import RefreshToken  # type: ignore # noqa: F401
 
-# # Import models so they're registered with the Base metadata
-# # from models.user import User  # type: ignore # noqa: F401
+# Import models so they're registered with the Base metadata
+# from models.user import User  # type: ignore # noqa: F401
 
-# # Test database URL - using SQLite in-memory for fast tests
-# # TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+# Test database URL - using SQLite in-memory for fast tests
+# TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
-# # Create async test engine
-# # test_engine = create_async_engine(
-# #     TEST_DATABASE_URL,
-# #     echo=False,
-# #     poolclass=StaticPool,
-# #     connect_args={
-# #         "check_same_thread": False,
-# #     },
-# # )
+# Create async test engine
+# test_engine = create_async_engine(
+#     TEST_DATABASE_URL,
+#     echo=False,
+#     poolclass=StaticPool,
+#     connect_args={
+#         "check_same_thread": False,
+#     },
+# )
 
-# # Create async session factory for tests
-# # TestSessionLocal = async_sessionmaker(
-# #     test_engine,
-# #     class_=AsyncSession,
-# #     expire_on_commit=False,
-# #     autocommit=False,
-# #     autoflush=False,
-# # )
+# Create async session factory for tests
+# TestSessionLocal = async_sessionmaker(
+#     test_engine,
+#     class_=AsyncSession,
+#     expire_on_commit=False,
+#     autocommit=False,
+#     autoflush=False,
+# )
 
 
-# # @pytest_asyncio.fixture(scope="function")
-# # async def test_db() -> AsyncGenerator[AsyncSession, None]:
-# #     """
-# #     Create a fresh database session for each test.
-# #     """
-# #     # Create all tables
-# #     async with test_engine.begin() as conn:
-# #         await conn.run_sync(Base.metadata.create_all)
+# @pytest_asyncio.fixture(scope="function")
+# async def test_db() -> AsyncGenerator[AsyncSession, None]:
+#     """
+#     Create a fresh database session for each test.
+#     """
+#     # Create all tables
+#     async with test_engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
 
-# #     # Create session
-# #     async with TestSessionLocal() as session:
-# #         try:
-# #             yield session
-# #         finally:
-# #             await session.close()
+#     # Create session
+#     async with TestSessionLocal() as session:
+#         try:
+#             yield session
+#         finally:
+#             await session.close()
 
 #     # Drop all tables after test
 #     # async with test_engine.begin() as conn:
 #     #     await conn.run_sync(Base.metadata.drop_all)
 
 
-# # @pytest_asyncio.fixture(scope="function")
-# # async def client(test_db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
-# #     """
-# #     Create a test client with dependency overrides.
-# #     """
+# @pytest_asyncio.fixture(scope="function")
+# async def client(test_db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+#     """
+#     Create a test client with dependency overrides.
+#     """
 
-# #     async def get_test_db():
-# #         yield test_db
+#     async def get_test_db():
+#         yield test_db
 
-# #     app.dependency_overrides[get_db] = get_test_db
+#     app.dependency_overrides[get_db] = get_test_db
 
-# #     async with AsyncClient(app=app, base_url="http://test") as ac:
-# #         yield ac
+#     async with AsyncClient(app=app, base_url="http://test") as ac:
+#         yield ac
 
-# #     # Clean up
-# #     app.dependency_overrides.clear()
+#     # Clean up
+#     app.dependency_overrides.clear()
 
 
 # @pytest.fixture(scope="function")
