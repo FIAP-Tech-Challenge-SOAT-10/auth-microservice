@@ -1,48 +1,48 @@
 import os
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+# from collections.abc import AsyncGenerator
+# from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from config import settings
-from logging_config import LoggingMiddleware, configure_logging, get_logger
-from metrics import setup_metrics
-from routers import admin, auth, health
+# from logging_config import LoggingMiddleware, configure_logging, get_logger
+# from metrics import setup_metrics
+# from routers import admin, auth, health
 
 # Configure logging
-configure_logging(
-    level=os.getenv("LOG_LEVEL", "INFO"),
-    json_logs=os.getenv("JSON_LOGS", "true").lower() == "true",
-)
+# configure_logging(
+#     level=os.getenv("LOG_LEVEL", "INFO"),
+#     json_logs=os.getenv("JSON_LOGS", "true").lower() == "true",
+# )
 
-logger = get_logger(__name__)
+# logger = get_logger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Application lifespan management."""
-    # Startup
-    logger.info("Starting authentication microservice")
-    yield
-    # Shutdown
-    logger.info("Shutting down authentication microservice")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+#     """Application lifespan management."""
+#     # Startup
+#     logger.info("Starting authentication microservice")
+#     yield
+#     # Shutdown
+#     logger.info("Shutting down authentication microservice")
 
 
 app = FastAPI(
     title="Authentication Microservice",
     description="A FastAPI-based authentication microservice with monitoring",
     version="1.0.0",
-    lifespan=lifespan,
+    # lifespan=lifespan,
 )
 
 # Configure Prometheus metrics
-instrumentator = setup_metrics()
-instrumentator.instrument(app)
+# instrumentator = setup_metrics()
+# instrumentator.instrument(app)
 
 # Add logging middleware
-app.add_middleware(LoggingMiddleware)
+# app.add_middleware(LoggingMiddleware)
 
 # CORS middleware
 app.add_middleware(
@@ -54,21 +54,26 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(health.router, tags=["health"])
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
-app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+# app.include_router(health.router, tags=["health"])
+# app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
+# app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+app.include_router(APIRouter(), prefix="/health")
 
 
 @app.get("/")
 async def root() -> dict[str, str]:
-    logger.info("Root endpoint accessed")
+    # logger.info("Root endpoint accessed")
     return {"message": "Authentication Microservice is running"}
 
 
-@app.get("/metrics")
-async def metrics() -> Response:
-    """Prometheus metrics endpoint."""
-    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+@app.get("/health")
+async def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+# @app.get("/metrics")
+# async def metrics() -> Response:
+#     """Prometheus metrics endpoint."""
+#     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 if __name__ == "__main__":
