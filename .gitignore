@@ -164,3 +164,6 @@ coverage.xml
 # Test databases
 test_*.db
 test_*.sqlite
+
+# Temporary files
+tmp/

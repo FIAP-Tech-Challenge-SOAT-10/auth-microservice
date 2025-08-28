@@ -1,40 +1,40 @@
 import os
-# from collections.abc import AsyncGenerator
-# from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from src.config import settings
-# from logging_config import LoggingMiddleware, configure_logging, get_logger
+from src.logging_config import LoggingMiddleware, configure_logging, get_logger
 # from metrics import setup_metrics
-# from routers import admin, auth, health
+from src.api.routers import admin, auth, health
 
 # Configure logging
-# configure_logging(
-#     level=os.getenv("LOG_LEVEL", "INFO"),
-#     json_logs=os.getenv("JSON_LOGS", "true").lower() == "true",
-# )
+configure_logging(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    json_logs=os.getenv("JSON_LOGS", "true").lower() == "true",
+)
 
-# logger = get_logger(__name__)
+logger = get_logger(__name__)
 
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-#     """Application lifespan management."""
-#     # Startup
-#     logger.info("Starting authentication microservice")
-#     yield
-#     # Shutdown
-#     logger.info("Shutting down authentication microservice")
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Application lifespan management."""
+    # Startup
+    logger.info("Starting authentication microservice")
+    yield
+    # Shutdown
+    logger.info("Shutting down authentication microservice")
 
 
 app = FastAPI(
     title="Authentication Microservice",
     description="A FastAPI-based authentication microservice with monitoring",
     version="1.0.0",
-    # lifespan=lifespan,
+    lifespan=lifespan,
 )
 
 # Configure Prometheus metrics
@@ -54,10 +54,9 @@ app.add_middleware(
 )
 
 # Include routers
-# app.include_router(health.router, tags=["health"])
-# app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
-# app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
-app.include_router(APIRouter(), prefix="/health")
+app.include_router(health.router, tags=["health"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
+app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
 
 
 @app.get("/")
@@ -66,9 +65,7 @@ async def root() -> dict[str, str]:
     return {"message": "Authentication Microservice is running"}
 
 
-@app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok"}
+
 
 # @app.get("/metrics")
 # async def metrics() -> Response:
