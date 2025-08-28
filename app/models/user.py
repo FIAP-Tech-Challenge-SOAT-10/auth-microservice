@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, text
-from sqlalchemy.orm import relationship
+# from sqlalchemy.orm import relationship
 
 from app.database import Base
 from app.models.roles import UserRole
@@ -25,7 +25,7 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
 
     # Relationship to RefreshToken
-    refresh_tokens = relationship("RefreshToken", back_populates="user")
+    # refresh_tokens = relationship("RefreshToken", back_populates="user")
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"
