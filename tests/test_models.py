@@ -1,4 +1,4 @@
-from app.models.user import User
+from src.infrastructure.database.models.user import User
 
 
 def test_user_model_fields():

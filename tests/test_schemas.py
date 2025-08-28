@@ -1,4 +1,4 @@
-from app.schemas.user import UserCreate
+from src.api.schemas.user import UserCreate
 
 
 def test_schema_user_create():
