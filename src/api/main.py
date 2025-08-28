@@ -11,7 +11,7 @@ from src.logging_config import LoggingMiddleware, configure_logging, get_logger
 # from metrics import setup_metrics
 from src.api.routers import admin, auth, health
 
-Configure logging
+# Configure logging
 configure_logging(
     level=os.getenv("LOG_LEVEL", "INFO"),
     json_logs=os.getenv("JSON_LOGS", "true").lower() == "true",
