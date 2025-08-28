@@ -1,4 +1,4 @@
-from app.database import engine
+from src.infrastructure.database.session import engine
 
 
 def test_engine_exists():
