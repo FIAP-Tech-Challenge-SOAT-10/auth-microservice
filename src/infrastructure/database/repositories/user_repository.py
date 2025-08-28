@@ -29,11 +29,11 @@ class UserRepository(UserRepo):
         user = User(id=user.id)
         new_user = User(
             id=user.id,
-            username=user.username | None,
-            full_name=user.full_name | None,
-            cpf=user.cpf | None,
-            email=user.email | None,
-            password_hash=user.password_hash | None,
+            username=user.username or None,
+            full_name=user.full_name or None,
+            cpf=user.cpf or None,
+            email=user.email or None,
+            password_hash=user.password_hash or None,
         )
         return new_user
 
