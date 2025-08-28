@@ -6,7 +6,7 @@ from src.domain.entities.user import User
 class UserRepository(ABC):
 
     @abstractmethod
-    def register_user(
+    async def register_user(
         self,
         username: str,
         full_name: str,
@@ -17,13 +17,21 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_user(self, user_id: int) -> User:
+    async def get_user(self, user_id: int) -> User | None:
         pass
 
     @abstractmethod
-    def update_user(self, user: User) -> User:
+    async def get_user_by_username(self, username: str) -> User | None:
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int) -> None:
+    async def get_user_by_email(self, email: str) -> User | None:
+        pass
+
+    @abstractmethod
+    async def update_user(self, user: User) -> User:
+        pass
+
+    @abstractmethod
+    async def delete_user(self, user_id: int) -> None:
         pass

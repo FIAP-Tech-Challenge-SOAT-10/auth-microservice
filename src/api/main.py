@@ -8,7 +8,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from src.config import settings
 from src.logging_config import LoggingMiddleware, configure_logging, get_logger
-# from metrics import setup_metrics
+from src.infrastructure.monitoring.metrics import setup_metrics # Updated import
 from src.api.routers import admin, auth, health
 
 # Configure logging
@@ -38,11 +38,11 @@ app = FastAPI(
 )
 
 # Configure Prometheus metrics
-# instrumentator = setup_metrics()
-# instrumentator.instrument(app)
+instrumentator = setup_metrics()
+instrumentator.instrument(app)
 
 # Add logging middleware
-# app.add_middleware(LoggingMiddleware)
+# app.add_middleware(LoggingMiddleware) # Keep commented for now, as it might interfere with logging setup
 
 # CORS middleware
 app.add_middleware(
@@ -65,12 +65,10 @@ async def root() -> dict[str, str]:
     return {"message": "Authentication Microservice is running"}
 
 
-
-
-# @app.get("/metrics")
-# async def metrics() -> Response:
-#     """Prometheus metrics endpoint."""
-#     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+@app.get("/metrics")
+async def metrics() -> Response:
+    """Prometheus metrics endpoint."""
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 if __name__ == "__main__":

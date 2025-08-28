@@ -58,6 +58,7 @@ def test_user_data() -> dict:
         "username": "testuser",
         "email": "test@example.com",
         "full_name": "Test User",
+        "cpf": "12345678901", # Added cpf
         "password": "testpassword123",
     }
 

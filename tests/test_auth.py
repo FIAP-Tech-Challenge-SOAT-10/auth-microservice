@@ -36,6 +36,7 @@ class TestAuthSignup:
             "username": "different_username",
             "email": test_user_data["email"],  # Same email
             "full_name": "Different User",
+            "cpf": "11122233344", # Added cpf
             "password": "differentpassword",
         }
 
@@ -54,6 +55,7 @@ class TestAuthSignup:
             "username": test_user_data["username"],  # Same username
             "email": "different@example.com",
             "full_name": "Different User",
+            "cpf": "55566677788", # Added cpf
             "password": "differentpassword",
         }
 
