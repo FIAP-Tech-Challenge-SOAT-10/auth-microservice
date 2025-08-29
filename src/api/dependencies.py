@@ -9,38 +9,33 @@ from src.infrastructure.database.models.user import User
 from src.infrastructure.database.models.roles import UserRole
 from src.infrastructure.security.token_service import decode_token
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)) -> User:
+async def get_current_user(credentials: HTTPAuthorizationCredentials | None = Depends(security), db: AsyncSession = Depends(get_db)) -> User | None:
+    if credentials is None:
+        return None
+        
     token = credentials.credentials
     try:
         payload = decode_token(token)
         username: str | None = payload.get("sub")
         if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            return None
     except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return None
 
     user = await db.execute(select(User).where(User.username == username))
     user = user.scalar_one_or_none()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
     return user
 
 def require_role(required_role: UserRole):
-    async def role_checker(current_user: User = Depends(get_current_user)) -> User:
+    async def role_checker(current_user: User | None = Depends(get_current_user)) -> User:
+        if current_user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not authenticated",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         if current_user.role != required_role:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

@@ -13,6 +13,7 @@ class UserRepository(ABC):
         cpf: str,
         email: str,
         password: str,
+        role: str = "user",
     ) -> User:
         pass
 
