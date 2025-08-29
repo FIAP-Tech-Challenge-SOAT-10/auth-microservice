@@ -2,14 +2,15 @@ import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Response, APIRouter
+from fastapi import APIRouter, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
-from src.config import settings
-from src.logging_config import LoggingMiddleware, configure_logging, get_logger
-from src.infrastructure.monitoring.metrics import setup_metrics # Updated import
 from src.api.routers import admin, auth, health
+from src.config import settings
+from src.infrastructure.monitoring.metrics import setup_metrics  # Updated import
+from src.logging_config import LoggingMiddleware, configure_logging, get_logger
 
 # Configure logging
 configure_logging(
@@ -35,6 +36,20 @@ app = FastAPI(
     description="A FastAPI-based authentication microservice with monitoring",
     version="1.0.0",
     lifespan=lifespan,
+    openapi_tags=[
+        {
+            "name": "authentication",
+            "description": "Authentication operations including signup, login, logout, and profile management",
+        },
+        {
+            "name": "admin",
+            "description": "Administrative operations requiring admin role",
+        },
+        {
+            "name": "health",
+            "description": "Health check endpoints for monitoring",
+        },
+    ],
 )
 
 # Configure Prometheus metrics
@@ -57,6 +72,22 @@ app.add_middleware(
 app.include_router(health.router, tags=["health"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
 app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="Authentication Microservice",
+        version="1.0.0",
+        description="A FastAPI-based authentication microservice with monitoring",
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
 
 
 @app.get("/")

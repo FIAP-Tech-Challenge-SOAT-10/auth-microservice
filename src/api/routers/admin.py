@@ -3,15 +3,24 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.dependencies import require_role
-from src.infrastructure.database.session import get_db
 from src.infrastructure.database.models.refresh_token import RefreshToken
-from src.infrastructure.database.models.user import User
 from src.infrastructure.database.models.roles import UserRole
+from src.infrastructure.database.models.user import User
+from src.infrastructure.database.session import get_db
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-@router.get("/dashboard")
+@router.get(
+    "/dashboard",
+    summary="Get admin dashboard",
+    description="Get admin dashboard with system statistics. Requires admin role for access.",
+    responses={
+        200: {"description": "Dashboard data retrieved successfully"},
+        401: {"description": "Not authenticated"},
+        403: {"description": "Access denied. Admin role required"},
+    },
+)
 async def get_admin_dashboard(
     current_admin: User = Depends(require_role(UserRole.ADMIN)),
     db: AsyncSession = Depends(get_db),
