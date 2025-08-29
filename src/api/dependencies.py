@@ -9,9 +9,16 @@ from src.infrastructure.database.models.user import User
 from src.infrastructure.database.models.roles import UserRole
 from src.infrastructure.security.token_service import decode_token
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: AsyncSession = Depends(get_db)) -> User:
+async def get_current_user(credentials: HTTPAuthorizationCredentials | None = Depends(security), db: AsyncSession = Depends(get_db)) -> User:
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
     token = credentials.credentials
     try:
         payload = decode_token(token)

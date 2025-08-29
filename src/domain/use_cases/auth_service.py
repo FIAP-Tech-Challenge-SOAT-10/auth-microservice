@@ -24,7 +24,7 @@ class AuthService:
         self.refresh_token_repository = refresh_token_repository
 
     async def register_user(
-        self, username: str, full_name: str, cpf: str, email: str, password: str
+        self, username: str, full_name: str, cpf: str, email: str, password: str, role: str = "user"
     ) -> User:
         existing_user_by_email = await self.user_repository.get_user_by_email(email)
         if existing_user_by_email:
@@ -41,6 +41,7 @@ class AuthService:
             cpf=cpf,
             email=email,
             password=hashed_password,
+            role=role,
         )
         return new_user
 

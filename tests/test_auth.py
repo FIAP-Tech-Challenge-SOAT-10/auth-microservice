@@ -2,9 +2,13 @@
 Tests for authentication endpoints.
 """
 
+from datetime import timedelta
+
 import pytest
 from httpx import AsyncClient
 from fastapi import status
+
+from src.infrastructure.security.token_service import create_access_token
 
 
 class TestAuthSignup:
@@ -64,6 +68,22 @@ class TestAuthSignup:
         assert response.status_code == 400
         assert "Username already taken" in response.json()["detail"]
 
+    @pytest.mark.asyncio
+    async def test_case_sensitive_username_and_email(self, client: AsyncClient, test_user_data: dict, created_user: dict):
+        """Test that usernames and emails are case sensitive."""
+        # Try to create user with different case
+        user_data_upper = {
+            "username": "TESTUSER",
+            "email": "TEST@EXAMPLE.COM",
+            "full_name": "Test User Upper",
+            "cpf": "99988877766",
+            "password": "testpassword123",
+        }
+
+        response = await client.post("/api/v1/auth/signup", json=user_data_upper)
+        # This should succeed as they are different (case sensitive)
+        assert response.status_code == 201
+
 
 class TestAuthLogin:
     """Test cases for user login endpoint."""
@@ -120,6 +140,30 @@ class TestAuthMe:
 
         assert data["username"] == test_user_data["username"]
         assert data["email"] == test_user_data["email"]
+
+    @pytest.mark.asyncio
+    async def test_get_me_with_invalid_token(self, client: AsyncClient):
+        """Test accessing /me with an invalid token."""
+        headers = {"Authorization": "Bearer invalidtoken"}
+        response = await client.get("/api/v1/auth/me", headers=headers)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    @pytest.mark.asyncio
+    async def test_get_me_with_malformed_token(self, client: AsyncClient):
+        """Test accessing /me with a malformed token."""
+        headers = {"Authorization": "Bearer"}
+        response = await client.get("/api/v1/auth/me", headers=headers)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    @pytest.mark.asyncio
+    async def test_get_me_with_expired_token(self, client: AsyncClient, test_user_data: dict):
+        """Test accessing /me with an expired token."""
+        expired_token = create_access_token(
+            data={"sub": test_user_data["username"]}, expires_delta=timedelta(seconds=-1)
+        )
+        headers = {"Authorization": f"Bearer {expired_token}"}
+        response = await client.get("/api/v1/auth/me", headers=headers)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 class TestRefreshTokens:

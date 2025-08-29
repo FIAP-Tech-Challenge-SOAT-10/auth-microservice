@@ -28,6 +28,7 @@ async def signup(
             cpf=user_data.cpf,
             email=user_data.email,
             password=user_data.password,
+            role=user_data.role.value if user_data.role else 'user',
         )
         return new_user
     except ValueError as e:

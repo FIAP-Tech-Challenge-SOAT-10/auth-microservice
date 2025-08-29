@@ -16,6 +16,7 @@ class UserRepository(UserRepo):
         cpf: str,
         email: str,
         password: str,
+        role: str = "user",
     ) -> User:
         new_user = User(
             username=username,
@@ -23,6 +24,7 @@ class UserRepository(UserRepo):
             cpf=cpf,
             email=email,
             password_hash=password,
+            role=role,
         )
         self.session.add(new_user)
         await self.session.commit()
