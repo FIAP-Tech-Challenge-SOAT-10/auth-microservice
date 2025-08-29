@@ -7,10 +7,10 @@ rule_files:
     # - "second_rules.yml"
 
 scrape_configs:
-    # Authentication service metrics
+    # Authentication service metrics (running locally)
     - job_name: "auth-service"
       static_configs:
-          - targets: ["auth-service:8000"]
+          - targets: ["host.docker.internal:8000"]
       scrape_interval: 5s
       metrics_path: "/metrics"
 

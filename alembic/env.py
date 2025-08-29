@@ -1,12 +1,20 @@
 import os
+import sys
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
+# Add the project root to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+
+from src.infrastructure.database.models.refresh_token import RefreshToken  # noqa: F401
+
 # Import your models for autogenerate support
-from database import Base
+from src.infrastructure.database.models.user import User  # noqa: F401
+from src.infrastructure.database.session import Base
 
 # Constants
 ASYNCPG_DRIVER = "postgresql+asyncpg"
