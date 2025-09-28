@@ -1,6 +1,7 @@
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import delete
+
 from src.domain.interfaces.user_repository import UserRepository as UserRepo
 from src.infrastructure.database.models.user import User
 
@@ -36,7 +37,9 @@ class UserRepository(UserRepo):
         return result.scalar_one_or_none()
 
     async def get_user_by_username(self, username: str) -> User | None:
-        result = await self.session.execute(select(User).filter(User.username == username))
+        result = await self.session.execute(
+            select(User).filter(User.username == username)
+        )
         return result.scalar_one_or_none()
 
     async def get_user_by_email(self, email: str) -> User | None:

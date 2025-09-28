@@ -1,6 +1,6 @@
 import logging
 import sys
-from logging import getLogger, StreamHandler
+from logging import StreamHandler, getLogger
 from logging.config import dictConfig
 
 from fastapi import Request

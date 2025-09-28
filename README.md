@@ -2,7 +2,7 @@
 
 A FastAPI-based authentication microservice with role-based authorization, PostgreSQL, SQLAlchemy 2.0 (async), and JWT authentication.
 
-[![CI/CD Pipeline](https://github.com/ju-c-lopes/auth-microservice/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/ju-c-lopes/auth-microservice/actions)
+[![CI/CD Pipeline](https://img.shields.io/badge/CI_CD-Pipeline-black)](https://github.com/ju-c-lopes/auth-microservice/actions)
 [![Coverage](https://codecov.io/gh/ju-c-lopes/auth-microservice/branch/main/graph/badge.svg)](https://codecov.io/gh/ju-c-lopes/auth-microservice)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -129,7 +129,7 @@ make help         # Show all available commands
 
 ### Authentication
 
--   `POST /api/v1/auth/register` - Register new user
+-   `POST /api/v1/auth/signup` - Register new user
 -   `POST /api/v1/auth/login` - User login
 -   `GET /api/v1/auth/me` - Get current user info
 -   `POST /api/v1/auth/refresh` - Refresh access token
@@ -161,7 +161,7 @@ The system supports two roles:
 **Register as admin:**
 
 ```bash
-curl -X POST "http://localhost:8000/api/v1/auth/register" \
+curl -X POST "http://localhost:8000/api/v1/auth/signup" \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
@@ -222,6 +222,23 @@ Automatically run on every commit:
 -   Basic file checks (trailing whitespace, file endings, etc.)
 -   Test execution
 
+## Testing
+
+Run the comprehensive test suite:
+
+```bash
+make test      # Testes de unidade, integração, e2e
+make test-cov  # Testes de cobertura
+```
+
+Test categories:
+
+-   **Unit tests** - Individual function testing
+-   **Integration tests** - API endpoint testing
+-   **Authentication tests** - JWT and password testing
+-   **Role-based authorization tests** - Admin access control
+-   **Database tests** - Model and migration testing
+
 ### Testing Framework
 
 -   **[pytest](https://docs.pytest.org/)** - Testing framework
@@ -261,22 +278,6 @@ GitHub Actions workflow includes:
 -   `expires_at` - Token expiration
 -   `created_at` - Timestamp
 -   `is_active` - Active status
-
-## Testing
-
-Run the comprehensive test suite:
-
-```bash
-make test-cov
-```
-
-Test categories:
-
--   **Unit tests** - Individual function testing
--   **Integration tests** - API endpoint testing
--   **Authentication tests** - JWT and password testing
--   **Role-based authorization tests** - Admin access control
--   **Database tests** - Model and migration testing
 
 ## Production Deployment
 

@@ -9,12 +9,12 @@ from alembic import context
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-
-from src.infrastructure.database.models.refresh_token import RefreshToken  # noqa: F401
-
 # Import your models for autogenerate support
-from src.infrastructure.database.models.user import User  # noqa: F401
-from src.infrastructure.database.session import Base
+from src.infrastructure.database.models.refresh_token import (  # noqa: E402; noqa: F401
+    RefreshToken,
+)
+from src.infrastructure.database.models.user import User  # noqa: E402, F401
+from src.infrastructure.database.session import Base  # noqa: E402
 
 # Constants
 ASYNCPG_DRIVER = "postgresql+asyncpg"

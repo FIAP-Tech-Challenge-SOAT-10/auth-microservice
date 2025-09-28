@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 from src.domain.entities.refresh_token import RefreshToken
+
 
 class RefreshTokenRepository(ABC):
     @abstractmethod

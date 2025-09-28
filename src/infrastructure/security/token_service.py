@@ -5,7 +5,11 @@ from typing import Any
 from jose import ExpiredSignatureError, JWTError, jwt
 
 from src.config import settings
-from src.infrastructure.security.password_service import get_password_hash, verify_password
+from src.infrastructure.security.password_service import (
+    get_password_hash,
+    verify_password,
+)
+
 
 def create_access_token(
     data: dict[str, Any], expires_delta: timedelta | None = None
@@ -23,6 +27,7 @@ def create_access_token(
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     return encoded_jwt
+
 
 def create_refresh_token(user_id: int, jti: str | None = None) -> tuple[str, str]:
     if jti is None:
@@ -44,6 +49,7 @@ def create_refresh_token(user_id: int, jti: str | None = None) -> tuple[str, str
 
     return refresh_token, jti
 
+
 def decode_token(token: str) -> dict[str, Any]:
     try:
         payload = jwt.decode(
@@ -53,9 +59,10 @@ def decode_token(token: str) -> dict[str, Any]:
         )
         return payload
     except ExpiredSignatureError as e:
-        raise e # Re-raise for specific handling
+        raise e  # Re-raise for specific handling
     except JWTError as e:
-        raise e # Re-raise for specific handling
+        raise e  # Re-raise for specific handling
+
 
 def decode_refresh_token(token: str) -> dict[str, Any]:
     payload = decode_token(token)
@@ -63,8 +70,10 @@ def decode_refresh_token(token: str) -> dict[str, Any]:
         raise JWTError("Invalid token type")
     return payload
 
+
 def generate_token_hash(token: str) -> str:
     return get_password_hash(token)
+
 
 def verify_refresh_token(token: str, stored_hash: str) -> bool:
     return verify_password(token, stored_hash)

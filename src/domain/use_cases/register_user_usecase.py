@@ -2,8 +2,7 @@ from src.domain.entities.user import User
 from src.domain.interfaces.user_repository import UserRepository
 
 
-class RegisterUserUseCase():
-
+class RegisterUserUseCase:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 

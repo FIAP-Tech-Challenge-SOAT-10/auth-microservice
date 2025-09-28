@@ -1,8 +1,11 @@
-from datetime import timedelta, datetime, UTC
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from src.infrastructure.security.password_service import get_password_hash, verify_password
+from src.infrastructure.security.password_service import (
+    get_password_hash,
+    verify_password,
+)
 from src.infrastructure.security.token_service import (
     create_access_token,
     create_refresh_token,

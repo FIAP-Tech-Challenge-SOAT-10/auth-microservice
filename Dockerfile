@@ -8,11 +8,14 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VENV_IN_PROJECT=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
-# Install Poetry using pip (which is already available in the base image)
-RUN pip install --upgrade pip && pip install poetry
-
 # Set work directory
 WORKDIR /app
+
+# Install Poetry using pip (which is already available in the base image)
+RUN pip install --upgrade pip && pip install poetry && \
+    sleep 40
+
+#RUN pip install --upgrade pip && pip install poetry
 
 # Copy Poetry files
 COPY pyproject.toml poetry.lock ./

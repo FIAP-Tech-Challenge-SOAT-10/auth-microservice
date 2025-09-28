@@ -2,7 +2,7 @@ import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, FastAPI, Response
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -10,7 +10,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from src.api.routers import admin, auth, health
 from src.config import settings
 from src.infrastructure.monitoring.metrics import setup_metrics  # Updated import
-from src.logging_config import LoggingMiddleware, configure_logging, get_logger
+from src.logging_config import configure_logging, get_logger
 
 # Configure logging
 configure_logging(
