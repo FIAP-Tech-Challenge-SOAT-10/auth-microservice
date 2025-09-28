@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     username: str
     email: EmailStr
     full_name: str | None = None
-    cpf: str # Added cpf
+    cpf: str  # Added cpf
 
 
 class UserCreate(UserBase):

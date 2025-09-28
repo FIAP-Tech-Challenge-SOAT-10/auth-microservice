@@ -3,8 +3,8 @@ Tests for admin-only endpoints.
 """
 
 import pytest
-from httpx import AsyncClient
 from fastapi import status
+from httpx import AsyncClient
 
 from src.infrastructure.database.models.roles import UserRole
 

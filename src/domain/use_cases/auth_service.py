@@ -1,9 +1,16 @@
 from datetime import UTC, datetime, timedelta
 
+from src.api.schemas.auth import Token, TokenWithRefresh
 from src.domain.entities.user import User
-from src.domain.interfaces.user_repository import UserRepository
 from src.domain.interfaces.refresh_token_repository import RefreshTokenRepository
-from src.infrastructure.security.password_service import get_password_hash, verify_password
+from src.domain.interfaces.user_repository import UserRepository
+from src.infrastructure.database.models.refresh_token import (
+    RefreshToken,  # Needed for creating RefreshToken object
+)
+from src.infrastructure.security.password_service import (
+    get_password_hash,
+    verify_password,
+)
 from src.infrastructure.security.token_service import (
     create_access_token,
     create_refresh_token,
@@ -11,8 +18,7 @@ from src.infrastructure.security.token_service import (
     generate_token_hash,
     verify_refresh_token,
 )
-from src.api.schemas.auth import Token, TokenWithRefresh
-from src.infrastructure.database.models.refresh_token import RefreshToken # Needed for creating RefreshToken object
+
 
 class AuthService:
     def __init__(
@@ -24,13 +30,21 @@ class AuthService:
         self.refresh_token_repository = refresh_token_repository
 
     async def register_user(
-        self, username: str, full_name: str, cpf: str, email: str, password: str, role: str = "user"
+        self,
+        username: str,
+        full_name: str,
+        cpf: str,
+        email: str,
+        password: str,
+        role: str = "user",
     ) -> User:
         existing_user_by_email = await self.user_repository.get_user_by_email(email)
         if existing_user_by_email:
             raise ValueError("Email already registered")
 
-        existing_user_by_username = await self.user_repository.get_user_by_username(username)
+        existing_user_by_username = await self.user_repository.get_user_by_username(
+            username
+        )
         if existing_user_by_username:
             raise ValueError("Username already taken")
 
@@ -82,15 +96,23 @@ class AuthService:
         user_id = int(payload.get("sub"))
         jti = payload.get("jti")
 
-        db_refresh_token = await self.refresh_token_repository.get_refresh_token_by_jti(jti)
+        db_refresh_token = await self.refresh_token_repository.get_refresh_token_by_jti(
+            jti
+        )
 
-        if not db_refresh_token or not db_refresh_token.is_active or not verify_refresh_token( # Added db_refresh_token.is_active
-            refresh_token_str, db_refresh_token.token_hash
+        if (
+            not db_refresh_token
+            or not db_refresh_token.is_active
+            or not verify_refresh_token(  # Added db_refresh_token.is_active
+                refresh_token_str, db_refresh_token.token_hash
+            )
         ):
             raise ValueError("Invalid refresh token")
 
         if db_refresh_token.expires_at.tzinfo is None:
-            db_refresh_token.expires_at = db_refresh_token.expires_at.replace(tzinfo=UTC)
+            db_refresh_token.expires_at = db_refresh_token.expires_at.replace(
+                tzinfo=UTC
+            )
 
         if db_refresh_token.expires_at < datetime.now(UTC):
             db_refresh_token.is_active = False
@@ -119,7 +141,9 @@ class AuthService:
         payload = decode_refresh_token(refresh_token_str)
         jti = payload.get("jti")
 
-        db_refresh_token = await self.refresh_token_repository.get_refresh_token_by_jti(jti)
+        db_refresh_token = await self.refresh_token_repository.get_refresh_token_by_jti(
+            jti
+        )
 
         if db_refresh_token:
             db_refresh_token.is_active = False

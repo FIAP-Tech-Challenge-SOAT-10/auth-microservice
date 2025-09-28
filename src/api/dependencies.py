@@ -9,23 +9,24 @@ from src.infrastructure.database.models.user import User
 from src.infrastructure.database.session import get_db
 from src.infrastructure.security.token_service import decode_token
 
-# Create the security scheme
+# Create the security scheme with auto_error=False to handle authentication manually
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
-    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    token: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    if credentials is None:
+    # Check if token is provided
+    if token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
+            detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     try:
-        payload = decode_token(credentials.credentials)
+        payload = decode_token(token.credentials)
         username: str | None = payload.get("sub")
         if username is None:
             raise HTTPException(

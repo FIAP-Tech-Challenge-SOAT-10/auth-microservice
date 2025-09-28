@@ -5,8 +5,8 @@ Tests for authentication endpoints.
 from datetime import timedelta
 
 import pytest
-from httpx import AsyncClient
 from fastapi import status
+from httpx import AsyncClient
 
 from src.infrastructure.security.token_service import create_access_token
 
@@ -40,7 +40,7 @@ class TestAuthSignup:
             "username": "different_username",
             "email": test_user_data["email"],  # Same email
             "full_name": "Different User",
-            "cpf": "11122233344", # Added cpf
+            "cpf": "11122233344",  # Added cpf
             "password": "differentpassword",
         }
 
@@ -59,7 +59,7 @@ class TestAuthSignup:
             "username": test_user_data["username"],  # Same username
             "email": "different@example.com",
             "full_name": "Different User",
-            "cpf": "55566677788", # Added cpf
+            "cpf": "55566677788",  # Added cpf
             "password": "differentpassword",
         }
 
@@ -69,7 +69,9 @@ class TestAuthSignup:
         assert "Username already taken" in response.json()["detail"]
 
     @pytest.mark.asyncio
-    async def test_case_sensitive_username_and_email(self, client: AsyncClient, test_user_data: dict, created_user: dict):
+    async def test_case_sensitive_username_and_email(
+        self, client: AsyncClient, test_user_data: dict, created_user: dict
+    ):
         """Test that usernames and emails are case sensitive."""
         # Try to create user with different case
         user_data_upper = {
@@ -156,10 +158,13 @@ class TestAuthMe:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     @pytest.mark.asyncio
-    async def test_get_me_with_expired_token(self, client: AsyncClient, test_user_data: dict):
+    async def test_get_me_with_expired_token(
+        self, client: AsyncClient, test_user_data: dict
+    ):
         """Test accessing /me with an expired token."""
         expired_token = create_access_token(
-            data={"sub": test_user_data["username"]}, expires_delta=timedelta(seconds=-1)
+            data={"sub": test_user_data["username"]},
+            expires_delta=timedelta(seconds=-1),
         )
         headers = {"Authorization": f"Bearer {expired_token}"}
         response = await client.get("/api/v1/auth/me", headers=headers)
@@ -170,7 +175,9 @@ class TestRefreshTokens:
     """Test refresh token creation, validation, and management."""
 
     @pytest.mark.asyncio
-    async def test_refresh_token_endpoint(self, client: AsyncClient, test_user_data, created_user):
+    async def test_refresh_token_endpoint(
+        self, client: AsyncClient, test_user_data, created_user
+    ):
         """Test the refresh token endpoint returns new access token."""
         login_response = await client.post(
             "/api/v1/auth/login",

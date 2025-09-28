@@ -5,14 +5,14 @@ class User:
 
     def __init__(
         self,
-        id: int,
+        user_id: int,
         username: str,
         full_name: str,
         cpf: str,
         email: str,
         password_hash: str,
     ):
-        self.id = id
+        self.id = user_id
         self.username = username
         self.full_name = full_name
         self.cpf = cpf
